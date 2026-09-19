@@ -1,0 +1,1295 @@
+engine,level,question,status,generated_sql,answer,manual_score,review_note
+baseline,Easy,IMO 번호 9876543인 선박의 기본 제원을 보여줘.,ok,"SELECT vessel_id, vessel_name, vessel_type, gross_tonnage, build_year, flag_state FROM vessels WHERE imo_number = '9876543';","선박 IMO 번호 9876543인 M/V Ocean Aurora의 기본 제원은 다음과 같습니다:
+
+- 선박 ID: 1
+- 선박 이름: M/V Ocean Aurora
+- 선박 유형: LNG Carrier
+- 총 톤수: 116,000 톤
+- 건조 연도: 2018
+- 국적: 마샬 제도",,
+baseline,Easy,2026년 5월 2일 기준으로 이미 만료됐거나 60일 이내 만료되는 certificate를 보여줘.,ok,"SELECT c.certificate_name, c.certificate_number, c.expiry_date, v.vessel_name 
+FROM certificates c 
+JOIN vessels v ON c.vessel_id = v.vessel_id 
+WHERE c.expiry_date < '2026-05-02' OR c.expiry_date BETWEEN '2026-03-03' AND '2026-05-02' 
+ORDER BY c.expiry_date;","As of May 2, 2026, the following certificate has either expired or is set to expire within 60 days:
+
+- **Certificate Name:** Cargo Ship Safety Construction Certificate
+- **Certificate Number:** SC-2021-009
+- **Expiry Date:** April 20, 2026
+- **Vessel Name:** M/V Pacific Trader",,
+baseline,Easy,아직 완료되지 않은 high 또는 critical PSC checklist item을 심각도 순으로 보여줘.,ok,"SELECT ci.item_id, ci.checklist_type, ci.item_category, ci.item_text, ci.severity
+FROM checklist_items ci
+WHERE ci.status != 'completed' AND ci.severity IN ('high', 'critical')
+ORDER BY ci.severity DESC;","다음은 아직 완료되지 않은 high 또는 critical PSC 체크리스트 항목을 심각도 순으로 정리한 목록입니다:
+
+1. **Critical**
+   - 항목 ID: 4
+     - 체크리스트 유형: PSC
+     - 항목 카테고리: Deck
+     - 항목 내용: Hatch cover condition verified
+
+2. **High**
+   - 항목 ID: 2
+     - 체크리스트 유형: PSC
+     - 항목 카테고리: Cargo
+     - 항목 내용: Cargo ESD trip test evidence prepared
+   - 항목 ID: 7
+     - 체크리스트 유형: PSC
+     - 항목 카테고리: Safety
+     - 항목 내용: Fire drill record signed by Master
+   - 항목 ID: 10
+     - 체크리스트 유형: PSC
+     - 항목 카테고리: Safety
+     - 항목 내용: Muster list updated after crew change
+
+이 항목들은 조속히 해결해야 할 중요 사항들입니다.",,
+baseline,Medium,이미 만료된 required crew training certificate 목록을 알려줘.,ok,"SELECT crew_training_records.training_name, crew_training_records.expiry_date, vessels.vessel_name
+FROM crew_training_records
+JOIN vessels ON crew_training_records.vessel_id = vessels.vessel_id
+WHERE crew_training_records.expiry_date < CURRENT_DATE AND crew_training_records.is_required = TRUE
+ORDER BY crew_training_records.expiry_date;","다음은 이미 만료된 필수 승무원 교육 인증서 목록입니다:
+
+1. **교육명**: Basic Safety Training
+   - **만료일**: 2025년 12월 31일
+   - **선박명**: M/V Hanseatic Star
+
+2. **교육명**: ECDIS Generic Training
+   - **만료일**: 2026년 4월 30일
+   - **선박명**: M/V Ocean Aurora
+
+3. **교육명**: Medical Care
+   - **만료일**: 2026년 5월 5일
+   - **선박명**: M/V Coastal Hope
+
+이 인증서들은 현재 만료된 상태입니다.",,
+baseline,Medium,선박별로 expired certificate와 90일 이내 만료 예정 certificate 개수를 표로 정리해줘.,ok,"SELECT v.vessel_name, 
+                  COUNT(CASE WHEN c.expiry_date < CURRENT_DATE THEN 1 END) AS expired_certificates,
+                  COUNT(CASE WHEN c.expiry_date BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '90 days' THEN 1 END) AS expiring_soon_certificates
+           FROM vessels v
+           LEFT JOIN certificates c ON v.vessel_id = c.vessel_id
+           GROUP BY v.vessel_name
+           ORDER BY v.vessel_name;","Here is the summary of expired certificates and certificates expiring within the next 90 days for each vessel:
+
+| Vessel Name               | Expired Certificates | Expiring Soon Certificates |
+|---------------------------|----------------------|----------------------------|
+| M/T Blue Horizon          | 0                    | 1                          |
+| M/V Coastal Hope          | 0                    | 1                          |
+| M/V Hanseatic Star       | 0                    | 1                          |
+| M/V Ocean Aurora          | 0                    | 1                          |
+| M/V Pacific Trader        | 1                    | 1                          |
+| M/V Training Vessel 01    | 0                    | 0                          |
+| M/V Training Vessel 02    | 0                    | 0                          |
+| M/V Training Vessel 03    | 0                    | 0                          |
+| M/V Training Vessel 04    | 0                    | 0                          |
+| M/V Training Vessel 05    | 0                    | 0                          |
+| M/V Training Vessel 06    | 0                    | 0                          |
+| M/V Training Vessel 07    | 0                    | 0                          |
+| M/V Training Vessel 08    | 0                    | 0                          |
+| M/V Training Vessel 09    | 0                    | 0                          |
+| M/V Training Vessel 10    | 0                    | 0                          |
+| M/V Training Vessel 11    | 0                    | 0                          |
+| M/V Training Vessel 12    | 0                    | 0                          |
+| M/V Training Vessel 13    | 0                    | 0                          |
+| M/V Training Vessel 14    | 0                    | 0                          |
+| M/V Training Vessel 15    | 0                    | 0                          |
+| M/V Training Vessel 16    | 0                    | 0                          |
+| M/V Training Vessel 17    | 0                    | 0                          |
+| M/V Training Vessel 18    | 0                    | 0                          |
+| M/V Training Vessel 19    | 0                    | 0                          |
+| M/V Training Vessel 20    | 0                    | 0                          |
+| M/V Training Vessel 21    | 0                    | 0                          |
+| M/V Training Vessel 22    | 0                    | 0                          |
+| M/V Training Vessel 23    | 0                    | 0                          |
+| M/V Training Vessel 24    | 0                    | 0                          |
+| M/V Training Vessel 25    | 0                    | 0                          |
+| M/V Training Vessel 26    | 0                    | 0                          |
+| M/V Training Vessel 27    | 0                    | 0                          |
+| M/V Training Vessel 28    | 0                    | 0                          |
+| M/V Training Vessel 29    | 0                    | 0                          |
+| M/V Training Vessel 30    | 0                    | 0                          |
+| M/V Training Vessel 31    | 0                    | 0                          |
+| M/V Training Vessel 32    | 0                    | 0                          |
+| M/V Training Vessel 33    | 0                    | 0                          |
+| M/V Training Vessel 34    | 0                    | 0                          |
+| M/V Training Vessel 35    | 0                    | 0                          |
+| M/V Training Vessel 36    | 0                    | 0                          |
+| M/V Training Vessel 37    | 0                    | 0                          |
+| M/V Training Vessel 38    | 0                    | 0                          |
+| M/V Training Vessel 39    | 0                    | 0                          |
+| M/V Training Vessel 40    | 0                    | 0                          |
+| M/V Training Vessel 41    | 0                    | 0                          |
+| M/V Training Vessel 42    | 0                    | 0                          |
+| M/V Training Vessel 43    | 0                    | 0                          |
+| M/V Training Vessel 44    | 0                    | 0                          |
+| M/V Training Vessel 45    | 0                    | 0                          |
+
+This table provides a clear overview of the certification status for each vessel.",,
+baseline,Medium,선박별 PSC checklist completion rate를 비교해줘.,ok,"SELECT v.vessel_name, COUNT(ci.item_id) AS total_items, 
+            COUNT(CASE WHEN ci.status = 'completed' THEN 1 END) AS completed_items, 
+            (COUNT(CASE WHEN ci.status = 'completed' THEN 1 END) * 100.0 / COUNT(ci.item_id)) AS completion_rate
+            FROM vessels v
+            JOIN checklist_items ci ON v.vessel_id = ci.vessel_id
+            GROUP BY v.vessel_name
+            ORDER BY completion_rate DESC;","The completion rates for the PSC checklist by vessel are as follows:
+
+1. **100% Completion Rate**: The following vessels have achieved a perfect completion rate of 100%:
+   - M/V Training Vessel 01
+   - M/V Training Vessel 02
+   - M/V Training Vessel 03
+   - M/V Training Vessel 04
+   - M/V Training Vessel 05
+   - M/V Training Vessel 06
+   - M/V Training Vessel 07
+   - M/V Training Vessel 08
+   - M/V Training Vessel 09
+   - M/V Training Vessel 10
+   - M/V Training Vessel 11
+   - M/V Training Vessel 12
+   - M/V Training Vessel 13
+   - M/V Training Vessel 14
+   - M/V Training Vessel 15
+   - M/V Training Vessel 16
+   - M/V Training Vessel 17
+   - M/V Training Vessel 18
+   - M/V Training Vessel 19
+   - M/V Training Vessel 20
+   - M/V Training Vessel 21
+   - M/V Training Vessel 22
+   - M/V Training Vessel 23
+   - M/V Training Vessel 24
+   - M/V Training Vessel 25
+   - M/V Training Vessel 26
+   - M/V Training Vessel 27
+   - M/V Training Vessel 28
+   - M/V Training Vessel 29
+   - M/V Training Vessel 30
+   - M/V Training Vessel 31
+   - M/V Training Vessel 32
+   - M/V Training Vessel 33
+   - M/V Training Vessel 34
+   - M/V Training Vessel 35
+   - M/V Training Vessel 36
+   - M/V Training Vessel 37
+   - M/V Training Vessel 38
+   - M/V Training Vessel 39
+   - M/V Training Vessel 40
+   - M/V Training Vessel 41
+   - M/V Training Vessel 42
+   - M/V Training Vessel 43
+   - M/V Training Vessel 44
+   - M/V Training Vessel 45
+
+2. **50% Completion Rate**: The following vessels have a completion rate of 50%:
+   - M/V Hanseatic Star (2 total items, 1 completed)
+   - M/T Blue Horizon (2 total items, 1 completed)
+   - M/V Pacific Trader (2 total items, 1 completed)
+
+3. **33.33% Completion Rate**: 
+   - M/V Ocean Aurora (3 total items, 1 completed)
+
+4. **0% Completion Rate**: 
+   - M/V Coastal Hope (1 total item, 0 completed)
+
+This data indicates that the majority of vessels have successfully completed their PSC checklists, with several achieving full compliance.",,
+baseline,Medium,"M/V Ocean Aurora에 적용되는 Regulation, Manual, System Doc을 선박 제원 기준으로 찾아줘.",ok,"SELECT cd.document_title, cd.document_type, cd.document_domain 
+FROM compliance_documents cd 
+JOIN vessels v ON cd.applies_vessel_type IS NULL OR v.vessel_type = cd.applies_vessel_type 
+WHERE v.vessel_name = 'Ocean Aurora'
+ORDER BY cd.document_type;","현재 M/V Ocean Aurora에 적용되는 Regulation, Manual, System Document에 대한 정보가 데이터베이스에 존재하지 않습니다. 추가적인 정보가 필요하시거나 다른 선박에 대한 문의가 있으시면 알려주세요.",,
+baseline,Hard,"fleet 전체에서 compliance risk가 높은 선박 순위를 보여줘. expired certificate, 90일 이내 만료 예정 certificate, open critical/high PSC item을 모두 반영해줘.",ok,"SELECT 
+    v.vessel_id, 
+    v.vessel_name, 
+    COUNT(c.certificate_id) AS expired_certificates,
+    COUNT(CASE WHEN c.expiry_date BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '90 days' THEN 1 END) AS upcoming_expired_certificates,
+    COUNT(ci.item_id) AS open_critical_high_items
+FROM 
+    vessels v
+LEFT JOIN 
+    certificates c ON v.vessel_id = c.vessel_id AND c.expiry_date < CURRENT_DATE
+LEFT JOIN 
+    checklist_items ci ON v.vessel_id = ci.vessel_id AND ci.status != 'completed' AND ci.severity IN ('critical', 'high')
+GROUP BY 
+    v.vessel_id, v.vessel_name
+ORDER BY 
+    (expired_certificates + upcoming_expired_certificates + open_critical_high_items) DESC;","It seems there was an error in the SQL query due to the use of aliases in the `ORDER BY` clause. The database does not recognize the aliases defined in the `SELECT` statement when used in the `ORDER BY` clause. 
+
+To resolve this, you can either repeat the full expressions in the `ORDER BY` clause or use a subquery. Here’s a corrected version of the SQL query:
+
+```sql
+SELECT 
+    v.vessel_id, 
+    v.vessel_name, 
+    COUNT(c.certificate_id) AS expired_certificates,
+    COUNT(CASE WHEN c.expiry_date BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '90 days' THEN 1 END) AS upcoming_expired_certificates,
+    COUNT(ci.item_id) AS open_critical_high_items
+FROM 
+    vessels v
+LEFT JOIN 
+    certificates c ON v.vessel_id = c.vessel_id AND c.expiry_date < CURRENT_DATE
+LEFT JOIN 
+    checklist_items ci ON v.vessel_id = ci.vessel_id AND ci.status != 'completed' AND ci.severity IN ('critical', 'high')
+GROUP BY 
+    v.vessel_id, v.vessel_name
+ORDER BY 
+    (COUNT(c.certificate_id) + COUNT(CASE WHEN c.expiry_date BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '90 days' THEN 1 END) + COUNT(ci.item_id)) DESC;
+```
+
+This query will provide a ranking of vessels based on their compliance risk, taking into account expired certificates, certificates expiring within the next 90 days, and open critical/high PSC items.",,
+baseline,Hard,required training이 만료됐거나 30일 이내 만료되는 crew를 선박별 위험도 순으로 정리해줘.,ok,"SELECT c.vessel_id, c.crew_name, c.rank, c.training_name, c.expiry_date, c.is_required 
+FROM crew_training_records c 
+WHERE c.is_required = TRUE 
+AND (c.expiry_date < CURRENT_DATE OR c.expiry_date BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '30 days') 
+ORDER BY c.vessel_id, c.expiry_date;","Here is the list of crew members whose required training has either expired or will expire within the next 30 days, organized by vessel ID and expiry date:
+
+**Vessel ID 1:**
+- **Lee Jisoo** (2/O) - ECDIS Generic Training, Expiry Date: April 30, 2026
+- **Maria Santos** (Chief Officer) - Advanced Cargo Operations, Expiry Date: May 20, 2026
+
+**Vessel ID 2:**
+- **Ravi Singh** (Bosun) - Enclosed Space Entry, Expiry Date: May 15, 2026
+
+**Vessel ID 3:**
+- **Jose Santos** (AB) - Basic Safety Training, Expiry Date: December 31, 2025
+
+**Vessel ID 4:**
+- **Park Hyun** (Chief Officer) - Oil Tanker Advanced Training, Expiry Date: May 28, 2026
+
+**Vessel ID 5:**
+- **Choi Ara** (Master) - Medical Care, Expiry Date: May 5, 2026
+
+Please ensure that the necessary training is completed before the expiry dates to maintain compliance.",,
+baseline,Hard,선박별로 지금 당장 조치해야 할 action item을 하나씩 보여줘.,ok,"SELECT v.vessel_name, ci.item_text, ci.due_date 
+FROM vessels v 
+JOIN checklist_items ci ON v.vessel_id = ci.vessel_id 
+WHERE ci.status != 'completed' 
+ORDER BY ci.due_date ASC 
+LIMIT 1;","현재 조치해야 할 항목은 다음과 같습니다: 
+
+선박 이름: **M/V Coastal Hope**  
+조치 항목: **승무원 교체 후 집합 목록 업데이트**  
+마감일: **2026년 5월 3일**  
+
+이 항목은 완료되지 않았으며, 우선적으로 처리해야 합니다.",,
+custom_prompt_fewshot,Easy,IMO 번호 9876543인 선박의 기본 제원을 보여줘.,ok,"SELECT
+    vessel_name,
+    vessel_type,
+    gross_tonnage,
+    build_year,
+    flag_state,
+    class_society,
+    operating_status
+FROM vessels
+WHERE imo_number = '9876543';","선박 IMO 번호 9876543인 M/V Ocean Aurora의 기본 제원은 다음과 같습니다:
+
+- 선박명: M/V Ocean Aurora
+- 선박 유형: LNG Carrier
+- 총 톤수: 116,000 톤
+- 건조 연도: 2018년
+- 국적: 마샬 제도
+- 클래스 사회: DNV
+- 운영 상태: 활성 상태",,
+custom_prompt_fewshot,Easy,2026년 5월 2일 기준으로 이미 만료됐거나 60일 이내 만료되는 certificate를 보여줘.,ok,"SELECT
+    v.vessel_name,
+    c.certificate_name,
+    c.expiry_date,
+    c.expiry_date - DATE '2026-05-02' AS days_remaining,
+    CASE
+        WHEN c.expiry_date < DATE '2026-05-02' THEN 'expired'
+        ELSE 'expiring'
+    END AS cert_status
+FROM certificates c
+JOIN vessels v ON v.vessel_id = c.vessel_id
+WHERE c.expiry_date <= DATE '2026-05-02' + INTERVAL '60 days'
+ORDER BY c.expiry_date;","As of May 2, 2026, the following certificates are either expired or will expire within the next 60 days:
+
+1. **M/V Pacific Trader**
+   - Certificate: Cargo Ship Safety Construction Certificate
+   - Expiry Date: April 20, 2026
+   - Status: Expired (12 days ago)
+
+2. **M/V Coastal Hope**
+   - Certificate: Cargo Ship Safety Equipment Certificate
+   - Expiry Date: May 10, 2026
+   - Status: Expiring (in 8 days)
+
+3. **M/V Ocean Aurora**
+   - Certificate: Cargo Ship Safety Equipment Certificate
+   - Expiry Date: May 25, 2026
+   - Status: Expiring (in 23 days)
+
+4. **M/T Blue Horizon**
+   - Certificate: International Oil Pollution Prevention Certificate
+   - Expiry Date: May 30, 2026
+   - Status: Expiring (in 28 days)
+
+5. **M/V Hanseatic Star**
+   - Certificate: Cargo Ship Safety Radio Certificate
+   - Expiry Date: June 20, 2026
+   - Status: Expiring (in 49 days)
+
+Please ensure that the necessary actions are taken for the expiring certificates to maintain compliance.",,
+custom_prompt_fewshot,Easy,아직 완료되지 않은 high 또는 critical PSC checklist item을 심각도 순으로 보여줘.,ok,"SELECT
+    v.vessel_name,
+    ci.item_category,
+    ci.item_text,
+    ci.severity,
+    ci.due_date
+FROM checklist_items ci
+JOIN vessels v ON v.vessel_id = ci.vessel_id
+WHERE ci.status <> 'completed'
+  AND ci.severity IN ('high', 'critical')
+ORDER BY
+    CASE ci.severity WHEN 'critical' THEN 1 WHEN 'high' THEN 2 ELSE 3 END,
+    ci.due_date;","다음은 아직 완료되지 않은 high 또는 critical PSC 체크리스트 항목을 심각도 순으로 정리한 목록입니다:
+
+1. **선박명**: M/V Pacific Trader
+   - **항목 카테고리**: Deck
+   - **항목 내용**: Hatch cover condition verified
+   - **심각도**: Critical
+   - **기한**: 2026년 5월 5일
+
+2. **선박명**: M/V Coastal Hope
+   - **항목 카테고리**: Safety
+   - **항목 내용**: Muster list updated after crew change
+   - **심각도**: High
+   - **기한**: 2026년 5월 3일
+
+3. **선박명**: M/V Ocean Aurora
+   - **항목 카테고리**: Cargo
+   - **항목 내용**: Cargo ESD trip test evidence prepared
+   - **심각도**: High
+   - **기한**: 2026년 5월 8일
+
+4. **선박명**: M/V Hanseatic Star
+   - **항목 카테고리**: Safety
+   - **항목 내용**: Fire drill record signed by Master
+   - **심각도**: High
+   - **기한**: 2026년 5월 12일
+
+이 항목들은 심각도에 따라 정렬되어 있으며, 기한이 임박한 항목부터 확인하시기 바랍니다.",,
+custom_prompt_fewshot,Medium,이미 만료된 required crew training certificate 목록을 알려줘.,ok,"SELECT
+    v.vessel_name,
+    ctr.crew_name,
+    ctr.rank,
+    ctr.training_name,
+    ctr.expiry_date
+FROM crew_training_records ctr
+JOIN vessels v ON v.vessel_id = ctr.vessel_id
+WHERE ctr.is_required = TRUE
+  AND ctr.expiry_date < DATE '2026-05-02'
+ORDER BY ctr.expiry_date;","다음은 이미 만료된 필수 승무원 교육 인증서 목록입니다:
+
+1. **선박명**: M/V Hanseatic Star
+   - **승무원 이름**: Jose Santos
+   - **직급**: AB
+   - **교육명**: Basic Safety Training
+   - **만료일**: 2025년 12월 31일
+
+2. **선박명**: M/V Ocean Aurora
+   - **승무원 이름**: Lee Jisoo
+   - **직급**: 2/O
+   - **교육명**: ECDIS Generic Training
+   - **만료일**: 2026년 4월 30일
+
+이 인증서들은 만료된 상태입니다.",,
+custom_prompt_fewshot,Medium,선박별로 expired certificate와 90일 이내 만료 예정 certificate 개수를 표로 정리해줘.,ok,"SELECT
+    v.vessel_name,
+    COUNT(*) FILTER (WHERE c.expiry_date < DATE '2026-05-02') AS expired_count,
+    COUNT(*) FILTER (
+        WHERE c.expiry_date >= DATE '2026-05-02'
+          AND c.expiry_date <= DATE '2026-05-02' + INTERVAL '90 days'
+    ) AS expiring_90d_count
+FROM vessels v
+LEFT JOIN certificates c ON c.vessel_id = v.vessel_id
+GROUP BY v.vessel_id, v.vessel_name
+ORDER BY v.vessel_name;","Here is the summary of expired and expiring certificates for each vessel:
+
+| Vessel Name              | Expired Certificates | Certificates Expiring in 90 Days |
+|-------------------------|---------------------|----------------------------------|
+| M/T Blue Horizon        | 0                   | 1                                |
+| M/V Coastal Hope        | 0                   | 1                                |
+| M/V Hanseatic Star     | 0                   | 1                                |
+| M/V Ocean Aurora        | 0                   | 1                                |
+| M/V Pacific Trader      | 1                   | 1                                |
+| M/V Training Vessel 01  | 0                   | 0                                |
+| M/V Training Vessel 02  | 0                   | 0                                |
+| M/V Training Vessel 03  | 0                   | 0                                |
+| M/V Training Vessel 04  | 0                   | 0                                |
+| M/V Training Vessel 05  | 0                   | 0                                |
+| M/V Training Vessel 06  | 0                   | 0                                |
+| M/V Training Vessel 07  | 0                   | 0                                |
+| M/V Training Vessel 08  | 0                   | 0                                |
+| M/V Training Vessel 09  | 0                   | 0                                |
+| M/V Training Vessel 10  | 0                   | 0                                |
+| M/V Training Vessel 11  | 0                   | 0                                |
+| M/V Training Vessel 12  | 0                   | 0                                |
+| M/V Training Vessel 13  | 0                   | 0                                |
+| M/V Training Vessel 14  | 0                   | 0                                |
+| M/V Training Vessel 15  | 0                   | 0                                |
+| M/V Training Vessel 16  | 0                   | 0                                |
+| M/V Training Vessel 17  | 0                   | 0                                |
+| M/V Training Vessel 18  | 0                   | 0                                |
+| M/V Training Vessel 19  | 0                   | 0                                |
+| M/V Training Vessel 20  | 0                   | 0                                |
+| M/V Training Vessel 21  | 0                   | 0                                |
+| M/V Training Vessel 22  | 0                   | 0                                |
+| M/V Training Vessel 23  | 0                   | 0                                |
+| M/V Training Vessel 24  | 0                   | 0                                |
+| M/V Training Vessel 25  | 0                   | 0                                |
+| M/V Training Vessel 26  | 0                   | 0                                |
+| M/V Training Vessel 27  | 0                   | 0                                |
+| M/V Training Vessel 28  | 0                   | 0                                |
+| M/V Training Vessel 29  | 0                   | 0                                |
+| M/V Training Vessel 30  | 0                   | 0                                |
+| M/V Training Vessel 31  | 0                   | 0                                |
+| M/V Training Vessel 32  | 0                   | 0                                |
+| M/V Training Vessel 33  | 0                   | 0                                |
+| M/V Training Vessel 34  | 0                   | 0                                |
+| M/V Training Vessel 35  | 0                   | 0                                |
+| M/V Training Vessel 36  | 0                   | 0                                |
+| M/V Training Vessel 37  | 0                   | 0                                |
+| M/V Training Vessel 38  | 0                   | 0                                |
+| M/V Training Vessel 39  | 0                   | 0                                |
+| M/V Training Vessel 40  | 0                   | 0                                |
+| M/V Training Vessel 41  | 0                   | 0                                |
+| M/V Training Vessel 42  | 0                   | 0                                |
+| M/V Training Vessel 43  | 0                   | 0                                |
+| M/V Training Vessel 44  | 0                   | 0                                |
+| M/V Training Vessel 45  | 0                   | 0                                |
+
+This table summarizes the count of expired certificates and those set to expire within the next 90 days for each vessel.",,
+custom_prompt_fewshot,Medium,선박별 PSC checklist completion rate를 비교해줘.,ok,"SELECT
+    v.vessel_name,
+    COUNT(ci.item_id) AS total_items,
+    COUNT(ci.item_id) FILTER (WHERE ci.status = 'completed') AS completed_items,
+    ROUND(
+        100.0 * COUNT(ci.item_id) FILTER (WHERE ci.status = 'completed')
+        / NULLIF(COUNT(ci.item_id), 0),
+        2
+    ) AS completion_pct
+FROM vessels v
+JOIN checklist_items ci ON ci.vessel_id = v.vessel_id
+WHERE ci.checklist_type = 'PSC'
+GROUP BY v.vessel_id, v.vessel_name
+ORDER BY completion_pct ASC, v.vessel_name;","선박별 PSC 체크리스트 완료율을 비교한 결과는 다음과 같습니다:
+
+1. **M/V Coastal Hope**: 완료율 0.00% (총 항목 1개, 완료된 항목 0개)
+2. **M/V Ocean Aurora**: 완료율 33.33% (총 항목 3개, 완료된 항목 1개)
+3. **M/T Blue Horizon**: 완료율 50.00% (총 항목 2개, 완료된 항목 1개)
+4. **M/V Hanseatic Star**: 완료율 50.00% (총 항목 2개, 완료된 항목 1개)
+5. **M/V Pacific Trader**: 완료율 50.00% (총 항목 2개, 완료된 항목 1개)
+
+이 외에도 많은 선박들이 100% 완료율을 기록했습니다. 예를 들어, **M/V Training Vessel 01**부터 **M/V Training Vessel 45**까지의 선박들은 모두 100% 완료율을 보였습니다. 
+
+이 데이터는 각 선박의 PSC 체크리스트 항목의 완료 상태를 기반으로 하며, 완료율이 낮은 선박들은 추가적인 점검이 필요할 수 있습니다.",,
+custom_prompt_fewshot,Medium,"M/V Ocean Aurora에 적용되는 Regulation, Manual, System Doc을 선박 제원 기준으로 찾아줘.",ok,"SELECT
+    v.vessel_name,
+    d.document_code,
+    d.document_title,
+    d.document_type,
+    d.document_domain,
+    d.is_mandatory
+FROM vessels v
+JOIN compliance_documents d
+    ON (d.applies_vessel_type IS NULL OR d.applies_vessel_type = v.vessel_type)
+   AND (d.tonnage_min IS NULL OR d.tonnage_min <= v.gross_tonnage)
+   AND (d.tonnage_max IS NULL OR d.tonnage_max >= v.gross_tonnage)
+   AND (d.build_year_min IS NULL OR d.build_year_min <= v.build_year)
+   AND (d.build_year_max IS NULL OR d.build_year_max >= v.build_year)
+WHERE v.vessel_name = 'M/V Ocean Aurora'
+ORDER BY d.document_domain, d.document_type, d.document_code;","The following regulations, manuals, and system documents apply to the vessel M/V Ocean Aurora based on its specifications:
+
+1. **Regulations:**
+   - **STCW-A-II**: STCW Deck Officer Competence Standards (Mandatory)
+   - **MARPOL-I-LNG**: MARPOL Annex I Machinery Space Bilge Requirements (Mandatory)
+   - **ISM-CODE**: International Safety Management Code (Mandatory)
+   - **SOLAS-V**: SOLAS Chapter V Safety of Navigation (Mandatory)
+   - **SOLAS-III**: SOLAS Chapter III Life-Saving Appliances (Mandatory)
+
+2. **Manuals:**
+   - **LNG-CARGO-MANUAL**: LNG Carrier Cargo Operation Manual (Mandatory)
+
+3. **System Documents:**
+   - **CARGO-SYSTEM-DOC**: LNG Cargo Handling System Doc (Not Mandatory)
+
+4. **Checklists:**
+   - **PSC-GENERAL**: PSC Pre-Inspection Checklist (Mandatory)
+
+5. **Manufacturer Manuals:**
+   - **PMS-ENGINE-MANUAL**: Engine PMS Manufacturer Manual (Not Mandatory)
+
+These documents are essential for ensuring compliance with safety, operational, and environmental standards for the M/V Ocean Aurora.",,
+custom_prompt_fewshot,Hard,"fleet 전체에서 compliance risk가 높은 선박 순위를 보여줘. expired certificate, 90일 이내 만료 예정 certificate, open critical/high PSC item을 모두 반영해줘.",ok,"WITH cert_risk AS (
+    SELECT
+        vessel_id,
+        COUNT(*) FILTER (WHERE expiry_date < DATE '2026-05-02') AS expired_cert_count,
+        COUNT(*) FILTER (
+            WHERE expiry_date >= DATE '2026-05-02'
+              AND expiry_date <= DATE '2026-05-02' + INTERVAL '90 days'
+        ) AS expiring_cert_count
+    FROM certificates
+    GROUP BY vessel_id
+),
+checklist_risk AS (
+    SELECT
+        vessel_id,
+        COUNT(*) FILTER (WHERE status <> 'completed' AND severity = 'critical') AS open_critical_count,
+        COUNT(*) FILTER (WHERE status <> 'completed' AND severity = 'high') AS open_high_count
+    FROM checklist_items
+    WHERE checklist_type = 'PSC'
+    GROUP BY vessel_id
+),
+scored AS (
+    SELECT
+        v.vessel_name,
+        COALESCE(cr.expired_cert_count, 0) AS expired_cert_count,
+        COALESCE(cr.expiring_cert_count, 0) AS expiring_cert_count,
+        COALESCE(ch.open_critical_count, 0) AS open_critical_count,
+        COALESCE(ch.open_high_count, 0) AS open_high_count,
+        COALESCE(cr.expired_cert_count, 0) * 3
+          + COALESCE(cr.expiring_cert_count, 0) * 2
+          + COALESCE(ch.open_critical_count, 0) * 3
+          + COALESCE(ch.open_high_count, 0) * 2 AS risk_score
+    FROM vessels v
+    LEFT JOIN cert_risk cr ON cr.vessel_id = v.vessel_id
+    LEFT JOIN checklist_risk ch ON ch.vessel_id = v.vessel_id
+)
+SELECT
+    vessel_name,
+    expired_cert_count,
+    expiring_cert_count,
+    open_critical_count,
+    open_high_count,
+    risk_score,
+    RANK() OVER (ORDER BY risk_score DESC) AS risk_rank
+FROM scored
+ORDER BY risk_rank, vessel_name;","Here are the vessels ranked by compliance risk, taking into account expired certificates, certificates expiring within the next 90 days, and open critical/high PSC items:
+
+1. **M/V Pacific Trader**
+   - Expired Certificates: 1
+   - Expiring Certificates: 1
+   - Open Critical Items: 1
+   - Open High Items: 0
+   - Risk Score: 8
+
+2. **M/V Coastal Hope**
+   - Expired Certificates: 0
+   - Expiring Certificates: 1
+   - Open Critical Items: 0
+   - Open High Items: 1
+   - Risk Score: 4
+
+3. **M/V Hanseatic Star**
+   - Expired Certificates: 0
+   - Expiring Certificates: 1
+   - Open Critical Items: 0
+   - Open High Items: 1
+   - Risk Score: 4
+
+4. **M/V Ocean Aurora**
+   - Expired Certificates: 0
+   - Expiring Certificates: 1
+   - Open Critical Items: 0
+   - Open High Items: 1
+   - Risk Score: 4
+
+5. **M/T Blue Horizon**
+   - Expired Certificates: 0
+   - Expiring Certificates: 1
+   - Open Critical Items: 0
+   - Open High Items: 0
+   - Risk Score: 2
+
+The remaining vessels (M/V Training Vessel 01 to M/V Training Vessel 45) have no compliance risks and are ranked lower with a risk score of 0.",,
+custom_prompt_fewshot,Hard,required training이 만료됐거나 30일 이내 만료되는 crew를 선박별 위험도 순으로 정리해줘.,ok,"WITH training_status AS (
+    SELECT
+        v.vessel_name,
+        ctr.crew_name,
+        ctr.rank,
+        ctr.training_name,
+        ctr.expiry_date,
+        CASE
+            WHEN ctr.expiry_date < DATE '2026-05-02' THEN 'expired'
+            WHEN ctr.expiry_date <= DATE '2026-05-02' + INTERVAL '30 days' THEN 'expiring_30d'
+            ELSE 'valid'
+        END AS training_status
+    FROM crew_training_records ctr
+    JOIN vessels v ON v.vessel_id = ctr.vessel_id
+    WHERE ctr.is_required = TRUE
+      AND ctr.expiry_date IS NOT NULL
+),
+at_risk AS (
+    SELECT *
+    FROM training_status
+    WHERE training_status IN ('expired', 'expiring_30d')
+)
+SELECT
+    vessel_name,
+    crew_name,
+    rank,
+    training_name,
+    expiry_date,
+    training_status,
+    RANK() OVER (
+        PARTITION BY vessel_name
+        ORDER BY
+            CASE training_status WHEN 'expired' THEN 1 ELSE 2 END,
+            expiry_date
+    ) AS vessel_risk_rank
+FROM at_risk
+ORDER BY
+    CASE training_status WHEN 'expired' THEN 1 ELSE 2 END,
+    expiry_date,
+    vessel_name,
+    crew_name;","Here is the list of crew members with required training that has either expired or is set to expire within the next 30 days, organized by vessel and risk level:
+
+1. **M/V Hanseatic Star**
+   - **Crew Name:** Jose Santos
+   - **Rank:** AB
+   - **Training Name:** Basic Safety Training
+   - **Expiry Date:** December 31, 2025
+   - **Status:** Expired
+   - **Risk Rank:** 1
+
+2. **M/V Ocean Aurora**
+   - **Crew Name:** Lee Jisoo
+   - **Rank:** 2/O
+   - **Training Name:** ECDIS Generic Training
+   - **Expiry Date:** April 30, 2026
+   - **Status:** Expired
+   - **Risk Rank:** 1
+
+3. **M/V Coastal Hope**
+   - **Crew Name:** Choi Ara
+   - **Rank:** Master
+   - **Training Name:** Medical Care
+   - **Expiry Date:** May 5, 2026
+   - **Status:** Expiring in 30 days
+   - **Risk Rank:** 1
+
+4. **M/V Pacific Trader**
+   - **Crew Name:** Ravi Singh
+   - **Rank:** Bosun
+   - **Training Name:** Enclosed Space Entry
+   - **Expiry Date:** May 15, 2026
+   - **Status:** Expiring in 30 days
+   - **Risk Rank:** 1
+
+5. **M/V Ocean Aurora**
+   - **Crew Name:** Maria Santos
+   - **Rank:** Chief Officer
+   - **Training Name:** Advanced Cargo Operations
+   - **Expiry Date:** May 20, 2026
+   - **Status:** Expiring in 30 days
+   - **Risk Rank:** 2
+
+6. **M/T Blue Horizon**
+   - **Crew Name:** Park Hyun
+   - **Rank:** Chief Officer
+   - **Training Name:** Oil Tanker Advanced Training
+   - **Expiry Date:** May 28, 2026
+   - **Status:** Expiring in 30 days
+   - **Risk Rank:** 1
+
+This summary highlights the crew members who are at risk due to their training status, allowing for timely action to ensure compliance and safety.",,
+custom_prompt_fewshot,Hard,선박별로 지금 당장 조치해야 할 action item을 하나씩 보여줘.,ok,"WITH action_items AS (
+    SELECT
+        v.vessel_id,
+        v.vessel_name,
+        'expired_certificate' AS action_type,
+        c.certificate_name AS action_detail,
+        c.expiry_date AS due_date,
+        4 AS priority_score
+    FROM certificates c
+    JOIN vessels v ON v.vessel_id = c.vessel_id
+    WHERE c.expiry_date < DATE '2026-05-02'
+
+    UNION ALL
+
+    SELECT
+        v.vessel_id,
+        v.vessel_name,
+        'critical_psc_item' AS action_type,
+        ci.item_text AS action_detail,
+        ci.due_date,
+        CASE ci.severity WHEN 'critical' THEN 4 WHEN 'high' THEN 3 ELSE 2 END AS priority_score
+    FROM checklist_items ci
+    JOIN vessels v ON v.vessel_id = ci.vessel_id
+    WHERE ci.checklist_type = 'PSC'
+      AND ci.status <> 'completed'
+      AND ci.severity IN ('critical', 'high')
+
+    UNION ALL
+
+    SELECT
+        v.vessel_id,
+        v.vessel_name,
+        'crew_training_expiry' AS action_type,
+        ctr.crew_name || ' - ' || ctr.training_name AS action_detail,
+        ctr.expiry_date AS due_date,
+        CASE
+            WHEN ctr.expiry_date < DATE '2026-05-02' THEN 4
+            ELSE 2
+        END AS priority_score
+    FROM crew_training_records ctr
+    JOIN vessels v ON v.vessel_id = ctr.vessel_id
+    WHERE ctr.is_required = TRUE
+      AND ctr.expiry_date <= DATE '2026-05-02' + INTERVAL '30 days'
+),
+ranked AS (
+    SELECT
+        *,
+        ROW_NUMBER() OVER (
+            PARTITION BY vessel_id
+            ORDER BY priority_score DESC, due_date ASC
+        ) AS rn
+    FROM action_items
+)
+SELECT
+    vessel_name,
+    action_type,
+    action_detail,
+    due_date,
+    priority_score
+FROM ranked
+WHERE rn = 1
+ORDER BY priority_score DESC, due_date ASC, vessel_name;","다음은 각 선박별로 지금 당장 조치해야 할 주요 사항입니다:
+
+1. **M/V Hanseatic Star**
+   - **조치 유형:** 승무원 교육 만료
+   - **상세 내용:** Jose Santos - 기본 안전 교육
+   - **마감일:** 2025년 12월 31일
+   - **우선 순위 점수:** 4
+
+2. **M/V Pacific Trader**
+   - **조치 유형:** 만료된 인증서
+   - **상세 내용:** 화물선 안전 건축 인증서
+   - **마감일:** 2026년 4월 20일
+   - **우선 순위 점수:** 4
+
+3. **M/V Ocean Aurora**
+   - **조치 유형:** 승무원 교육 만료
+   - **상세 내용:** Lee Jisoo - ECDIS 일반 교육
+   - **마감일:** 2026년 4월 30일
+   - **우선 순위 점수:** 4
+
+4. **M/V Coastal Hope**
+   - **조치 유형:** 중대한 PSC 항목
+   - **상세 내용:** 승무원 변경 후 비상 대피 목록 업데이트
+   - **마감일:** 2026년 5월 3일
+   - **우선 순위 점수:** 3
+
+5. **M/T Blue Horizon**
+   - **조치 유형:** 승무원 교육 만료
+   - **상세 내용:** Park Hyun - 유조선 고급 교육
+   - **마감일:** 2026년 5월 28일
+   - **우선 순위 점수:** 2
+
+각 선박의 조치 사항을 신속히 처리하시기 바랍니다.",,
+object_index_retriever,Easy,IMO 번호 9876543인 선박의 기본 제원을 보여줘.,ok,"SELECT
+    vessel_name,
+    vessel_type,
+    gross_tonnage,
+    build_year,
+    flag_state,
+    class_society,
+    operating_status
+FROM vessels
+WHERE imo_number = '9876543';","선박 IMO 번호 9876543인 M/V Ocean Aurora의 기본 제원은 다음과 같습니다:
+
+- 선박명: M/V Ocean Aurora
+- 선박 유형: LNG Carrier
+- 총 톤수: 116,000 톤
+- 건조 연도: 2018년
+- 국적: 마샬 제도
+- 클래스 사회: DNV
+- 운영 상태: 활성 상태",,
+object_index_retriever,Easy,2026년 5월 2일 기준으로 이미 만료됐거나 60일 이내 만료되는 certificate를 보여줘.,ok,"SELECT
+    v.vessel_name,
+    c.certificate_name,
+    c.expiry_date,
+    c.expiry_date - DATE '2026-05-02' AS days_remaining,
+    CASE
+        WHEN c.expiry_date < DATE '2026-05-02' THEN 'expired'
+        ELSE 'expiring'
+    END AS cert_status
+FROM certificates c
+JOIN vessels v ON v.vessel_id = c.vessel_id
+WHERE c.expiry_date <= DATE '2026-05-02' + INTERVAL '60 days'
+ORDER BY c.expiry_date;","As of May 2, 2026, the following certificates are either expired or will expire within the next 60 days:
+
+1. **M/V Pacific Trader**
+   - Certificate: Cargo Ship Safety Construction Certificate
+   - Expiry Date: April 20, 2026
+   - Status: Expired (12 days ago)
+
+2. **M/V Coastal Hope**
+   - Certificate: Cargo Ship Safety Equipment Certificate
+   - Expiry Date: May 10, 2026
+   - Status: Expiring (in 8 days)
+
+3. **M/V Ocean Aurora**
+   - Certificate: Cargo Ship Safety Equipment Certificate
+   - Expiry Date: May 25, 2026
+   - Status: Expiring (in 23 days)
+
+4. **M/T Blue Horizon**
+   - Certificate: International Oil Pollution Prevention Certificate
+   - Expiry Date: May 30, 2026
+   - Status: Expiring (in 28 days)
+
+5. **M/V Hanseatic Star**
+   - Certificate: Cargo Ship Safety Radio Certificate
+   - Expiry Date: June 20, 2026
+   - Status: Expiring (in 49 days)
+
+Please ensure that necessary actions are taken for the expiring certificates to maintain compliance.",,
+object_index_retriever,Easy,아직 완료되지 않은 high 또는 critical PSC checklist item을 심각도 순으로 보여줘.,ok,"SELECT
+    v.vessel_name,
+    ci.item_category,
+    ci.item_text,
+    ci.severity,
+    ci.due_date
+FROM checklist_items ci
+JOIN vessels v ON v.vessel_id = ci.vessel_id
+WHERE ci.checklist_type = 'PSC'
+  AND ci.status <> 'completed'
+  AND ci.severity IN ('high', 'critical')
+ORDER BY
+    CASE ci.severity WHEN 'critical' THEN 1 WHEN 'high' THEN 2 ELSE 3 END,
+    ci.due_date;","다음은 아직 완료되지 않은 PSC 체크리스트 항목 중 심각도 순으로 정렬된 high 및 critical 항목입니다:
+
+1. **선박명**: M/V Pacific Trader
+   - **항목 카테고리**: Deck
+   - **항목 내용**: Hatch cover condition verified
+   - **심각도**: Critical
+   - **기한**: 2026년 5월 5일
+
+2. **선박명**: M/V Coastal Hope
+   - **항목 카테고리**: Safety
+   - **항목 내용**: Muster list updated after crew change
+   - **심각도**: High
+   - **기한**: 2026년 5월 3일
+
+3. **선박명**: M/V Ocean Aurora
+   - **항목 카테고리**: Cargo
+   - **항목 내용**: Cargo ESD trip test evidence prepared
+   - **심각도**: High
+   - **기한**: 2026년 5월 8일
+
+4. **선박명**: M/V Hanseatic Star
+   - **항목 카테고리**: Safety
+   - **항목 내용**: Fire drill record signed by Master
+   - **심각도**: High
+   - **기한**: 2026년 5월 12일
+
+이 항목들은 조치가 필요하며, 기한 내에 해결되어야 합니다.",,
+object_index_retriever,Medium,이미 만료된 required crew training certificate 목록을 알려줘.,ok,"SELECT
+    v.vessel_name,
+    ctr.crew_name,
+    ctr.rank,
+    ctr.training_name,
+    ctr.expiry_date
+FROM crew_training_records ctr
+JOIN vessels v ON v.vessel_id = ctr.vessel_id
+WHERE ctr.is_required = TRUE
+  AND ctr.expiry_date < DATE '2026-05-02'
+ORDER BY ctr.expiry_date;","다음은 이미 만료된 필수 승무원 교육 인증서 목록입니다:
+
+1. **선박명**: M/V Hanseatic Star
+   - **승무원 이름**: Jose Santos
+   - **직급**: AB
+   - **교육명**: Basic Safety Training
+   - **만료일**: 2025년 12월 31일
+
+2. **선박명**: M/V Ocean Aurora
+   - **승무원 이름**: Lee Jisoo
+   - **직급**: 2/O
+   - **교육명**: ECDIS Generic Training
+   - **만료일**: 2026년 4월 30일
+
+이 인증서들은 만료된 상태이며, 승무원들은 해당 교육을 갱신해야 합니다.",,
+object_index_retriever,Medium,선박별로 expired certificate와 90일 이내 만료 예정 certificate 개수를 표로 정리해줘.,ok,"SELECT
+    v.vessel_name,
+    COUNT(*) FILTER (WHERE c.expiry_date < DATE '2026-05-02') AS expired_count,
+    COUNT(*) FILTER (
+        WHERE c.expiry_date >= DATE '2026-05-02'
+          AND c.expiry_date <= DATE '2026-05-02' + INTERVAL '90 days'
+    ) AS expiring_90d_count
+FROM vessels v
+LEFT JOIN certificates c ON c.vessel_id = v.vessel_id
+GROUP BY v.vessel_id, v.vessel_name
+ORDER BY v.vessel_name;","Here is the summary of expired and expiring certificates for each vessel:
+
+| Vessel Name              | Expired Certificates | Certificates Expiring in 90 Days |
+|-------------------------|---------------------|----------------------------------|
+| M/T Blue Horizon        | 0                   | 1                                |
+| M/V Coastal Hope        | 0                   | 1                                |
+| M/V Hanseatic Star     | 0                   | 1                                |
+| M/V Ocean Aurora        | 0                   | 1                                |
+| M/V Pacific Trader      | 1                   | 1                                |
+| M/V Training Vessel 01  | 0                   | 0                                |
+| M/V Training Vessel 02  | 0                   | 0                                |
+| M/V Training Vessel 03  | 0                   | 0                                |
+| M/V Training Vessel 04  | 0                   | 0                                |
+| M/V Training Vessel 05  | 0                   | 0                                |
+| M/V Training Vessel 06  | 0                   | 0                                |
+| M/V Training Vessel 07  | 0                   | 0                                |
+| M/V Training Vessel 08  | 0                   | 0                                |
+| M/V Training Vessel 09  | 0                   | 0                                |
+| M/V Training Vessel 10  | 0                   | 0                                |
+| M/V Training Vessel 11  | 0                   | 0                                |
+| M/V Training Vessel 12  | 0                   | 0                                |
+| M/V Training Vessel 13  | 0                   | 0                                |
+| M/V Training Vessel 14  | 0                   | 0                                |
+| M/V Training Vessel 15  | 0                   | 0                                |
+| M/V Training Vessel 16  | 0                   | 0                                |
+| M/V Training Vessel 17  | 0                   | 0                                |
+| M/V Training Vessel 18  | 0                   | 0                                |
+| M/V Training Vessel 19  | 0                   | 0                                |
+| M/V Training Vessel 20  | 0                   | 0                                |
+| M/V Training Vessel 21  | 0                   | 0                                |
+| M/V Training Vessel 22  | 0                   | 0                                |
+| M/V Training Vessel 23  | 0                   | 0                                |
+| M/V Training Vessel 24  | 0                   | 0                                |
+| M/V Training Vessel 25  | 0                   | 0                                |
+| M/V Training Vessel 26  | 0                   | 0                                |
+| M/V Training Vessel 27  | 0                   | 0                                |
+| M/V Training Vessel 28  | 0                   | 0                                |
+| M/V Training Vessel 29  | 0                   | 0                                |
+| M/V Training Vessel 30  | 0                   | 0                                |
+| M/V Training Vessel 31  | 0                   | 0                                |
+| M/V Training Vessel 32  | 0                   | 0                                |
+| M/V Training Vessel 33  | 0                   | 0                                |
+| M/V Training Vessel 34  | 0                   | 0                                |
+| M/V Training Vessel 35  | 0                   | 0                                |
+| M/V Training Vessel 36  | 0                   | 0                                |
+| M/V Training Vessel 37  | 0                   | 0                                |
+| M/V Training Vessel 38  | 0                   | 0                                |
+| M/V Training Vessel 39  | 0                   | 0                                |
+| M/V Training Vessel 40  | 0                   | 0                                |
+| M/V Training Vessel 41  | 0                   | 0                                |
+| M/V Training Vessel 42  | 0                   | 0                                |
+| M/V Training Vessel 43  | 0                   | 0                                |
+| M/V Training Vessel 44  | 0                   | 0                                |
+| M/V Training Vessel 45  | 0                   | 0                                |
+
+This table summarizes the count of expired certificates and those set to expire within the next 90 days for each vessel.",,
+object_index_retriever,Medium,선박별 PSC checklist completion rate를 비교해줘.,ok,"SELECT
+    v.vessel_name,
+    COUNT(ci.item_id) AS total_items,
+    COUNT(ci.item_id) FILTER (WHERE ci.status = 'completed') AS completed_items,
+    ROUND(
+        100.0 * COUNT(ci.item_id) FILTER (WHERE ci.status = 'completed')
+        / NULLIF(COUNT(ci.item_id), 0),
+        2
+    ) AS completion_pct
+FROM vessels v
+JOIN checklist_items ci ON ci.vessel_id = v.vessel_id
+WHERE ci.checklist_type = 'PSC'
+GROUP BY v.vessel_id, v.vessel_name
+ORDER BY completion_pct ASC, v.vessel_name;","선박별 PSC 체크리스트 완료율을 비교한 결과는 다음과 같습니다:
+
+1. **M/V Coastal Hope**: 0.00% (1개 항목 중 0개 완료)
+2. **M/V Ocean Aurora**: 33.33% (3개 항목 중 1개 완료)
+3. **M/T Blue Horizon**: 50.00% (2개 항목 중 1개 완료)
+4. **M/V Hanseatic Star**: 50.00% (2개 항목 중 1개 완료)
+5. **M/V Pacific Trader**: 50.00% (2개 항목 중 1개 완료)
+
+이 외에도 많은 선박들이 100% 완료율을 기록했습니다. 예를 들어, **M/V Training Vessel 01**부터 **M/V Training Vessel 45**까지의 선박들은 모두 100% 완료율을 보였습니다. 이들은 각각 1개 항목을 가지고 있으며, 모두 완료된 상태입니다.
+
+전체적으로, 많은 선박들이 높은 완료율을 기록하고 있으며, 특히 훈련 선박들이 모든 체크리스트 항목을 완료한 것으로 나타났습니다.",,
+object_index_retriever,Medium,"M/V Ocean Aurora에 적용되는 Regulation, Manual, System Doc을 선박 제원 기준으로 찾아줘.",ok,"SELECT
+    v.vessel_name,
+    d.document_code,
+    d.document_title,
+    d.document_type,
+    d.document_domain,
+    d.is_mandatory
+FROM vessels v
+JOIN compliance_documents d
+    ON (d.applies_vessel_type IS NULL OR d.applies_vessel_type = v.vessel_type)
+   AND (d.tonnage_min IS NULL OR d.tonnage_min <= v.gross_tonnage)
+   AND (d.tonnage_max IS NULL OR d.tonnage_max >= v.gross_tonnage)
+   AND (d.build_year_min IS NULL OR d.build_year_min <= v.build_year)
+   AND (d.build_year_max IS NULL OR d.build_year_max >= v.build_year)
+WHERE v.vessel_name = 'M/V Ocean Aurora'
+ORDER BY d.document_domain, d.document_type, d.document_code;","The following regulations, manuals, and system documents apply to the vessel M/V Ocean Aurora based on its specifications:
+
+1. **Regulations:**
+   - **STCW-A-II**: STCW Deck Officer Competence Standards (Mandatory)
+   - **MARPOL-I-LNG**: MARPOL Annex I Machinery Space Bilge Requirements (Mandatory)
+   - **ISM-CODE**: International Safety Management Code (Mandatory)
+   - **SOLAS-V**: SOLAS Chapter V Safety of Navigation (Mandatory)
+   - **SOLAS-III**: SOLAS Chapter III Life-Saving Appliances (Mandatory)
+
+2. **Manuals:**
+   - **LNG-CARGO-MANUAL**: LNG Carrier Cargo Operation Manual (Mandatory)
+   - **PMS-ENGINE-MANUAL**: Engine PMS Manufacturer Manual (Not Mandatory)
+
+3. **System Documents:**
+   - **CARGO-SYSTEM-DOC**: LNG Cargo Handling System Doc (Not Mandatory)
+
+4. **Checklists:**
+   - **PSC-GENERAL**: PSC Pre-Inspection Checklist (Mandatory)
+
+These documents are essential for ensuring compliance with safety, operational, and environmental standards for the M/V Ocean Aurora.",,
+object_index_retriever,Hard,"fleet 전체에서 compliance risk가 높은 선박 순위를 보여줘. expired certificate, 90일 이내 만료 예정 certificate, open critical/high PSC item을 모두 반영해줘.",ok,"WITH cert_risk AS (
+    SELECT
+        vessel_id,
+        COUNT(*) FILTER (WHERE expiry_date < DATE '2026-05-02') AS expired_cert_count,
+        COUNT(*) FILTER (
+            WHERE expiry_date >= DATE '2026-05-02'
+              AND expiry_date <= DATE '2026-05-02' + INTERVAL '90 days'
+        ) AS expiring_cert_count
+    FROM certificates
+    GROUP BY vessel_id
+),
+checklist_risk AS (
+    SELECT
+        vessel_id,
+        COUNT(*) FILTER (WHERE status <> 'completed' AND severity = 'critical') AS open_critical_count,
+        COUNT(*) FILTER (WHERE status <> 'completed' AND severity = 'high') AS open_high_count
+    FROM checklist_items
+    WHERE checklist_type = 'PSC'
+    GROUP BY vessel_id
+),
+scored AS (
+    SELECT
+        v.vessel_name,
+        COALESCE(cr.expired_cert_count, 0) AS expired_cert_count,
+        COALESCE(cr.expiring_cert_count, 0) AS expiring_cert_count,
+        COALESCE(ch.open_critical_count, 0) AS open_critical_count,
+        COALESCE(ch.open_high_count, 0) AS open_high_count,
+        COALESCE(cr.expired_cert_count, 0) * 3
+          + COALESCE(cr.expiring_cert_count, 0) * 2
+          + COALESCE(ch.open_critical_count, 0) * 3
+          + COALESCE(ch.open_high_count, 0) * 2 AS risk_score
+    FROM vessels v
+    LEFT JOIN cert_risk cr ON cr.vessel_id = v.vessel_id
+    LEFT JOIN checklist_risk ch ON ch.vessel_id = v.vessel_id
+)
+SELECT
+    vessel_name,
+    expired_cert_count,
+    expiring_cert_count,
+    open_critical_count,
+    open_high_count,
+    risk_score,
+    RANK() OVER (ORDER BY risk_score DESC) AS risk_rank
+FROM scored
+ORDER BY risk_rank, vessel_name;","Here are the vessels ranked by compliance risk, taking into account expired certificates, certificates expiring within the next 90 days, and open critical/high PSC items:
+
+1. **M/V Pacific Trader**
+   - Expired Certificates: 1
+   - Expiring Certificates: 1
+   - Open Critical Items: 1
+   - Open High Items: 0
+   - Risk Score: 8
+
+2. **M/V Coastal Hope**
+   - Expired Certificates: 0
+   - Expiring Certificates: 1
+   - Open Critical Items: 0
+   - Open High Items: 1
+   - Risk Score: 4
+
+3. **M/V Hanseatic Star**
+   - Expired Certificates: 0
+   - Expiring Certificates: 1
+   - Open Critical Items: 0
+   - Open High Items: 1
+   - Risk Score: 4
+
+4. **M/V Ocean Aurora**
+   - Expired Certificates: 0
+   - Expiring Certificates: 1
+   - Open Critical Items: 0
+   - Open High Items: 1
+   - Risk Score: 4
+
+5. **M/T Blue Horizon**
+   - Expired Certificates: 0
+   - Expiring Certificates: 1
+   - Open Critical Items: 0
+   - Open High Items: 0
+   - Risk Score: 2
+
+The remaining vessels (M/V Training Vessel 01 to M/V Training Vessel 45) have no compliance risks and are ranked equally with a risk score of 0.",,
+object_index_retriever,Hard,required training이 만료됐거나 30일 이내 만료되는 crew를 선박별 위험도 순으로 정리해줘.,ok,"WITH training_status AS (
+    SELECT
+        v.vessel_name,
+        ctr.crew_name,
+        ctr.rank,
+        ctr.training_name,
+        ctr.expiry_date,
+        CASE
+            WHEN ctr.expiry_date < DATE '2026-05-02' THEN 'expired'
+            WHEN ctr.expiry_date <= DATE '2026-05-02' + INTERVAL '30 days' THEN 'expiring_30d'
+            ELSE 'valid'
+        END AS training_status
+    FROM crew_training_records ctr
+    JOIN vessels v ON v.vessel_id = ctr.vessel_id
+    WHERE ctr.is_required = TRUE
+      AND ctr.expiry_date IS NOT NULL
+),
+at_risk AS (
+    SELECT *
+    FROM training_status
+    WHERE training_status IN ('expired', 'expiring_30d')
+)
+SELECT
+    vessel_name,
+    crew_name,
+    rank,
+    training_name,
+    expiry_date,
+    training_status,
+    RANK() OVER (
+        PARTITION BY vessel_name
+        ORDER BY
+            CASE training_status WHEN 'expired' THEN 1 ELSE 2 END,
+            expiry_date
+    ) AS vessel_risk_rank
+FROM at_risk
+ORDER BY
+    vessel_name,
+    vessel_risk_rank;","Here is the list of crew members with required training that has either expired or is set to expire within the next 30 days, organized by vessel and risk level:
+
+1. **M/V Hanseatic Star**
+   - **Crew Name:** Jose Santos
+   - **Rank:** AB
+   - **Training Name:** Basic Safety Training
+   - **Expiry Date:** December 31, 2025
+   - **Status:** Expired
+
+2. **M/V Ocean Aurora**
+   - **Crew Name:** Lee Jisoo
+   - **Rank:** 2/O
+   - **Training Name:** ECDIS Generic Training
+   - **Expiry Date:** April 30, 2026
+   - **Status:** Expired
+
+3. **M/V Coastal Hope**
+   - **Crew Name:** Choi Ara
+   - **Rank:** Master
+   - **Training Name:** Medical Care
+   - **Expiry Date:** May 5, 2026
+   - **Status:** Expiring in 30 days
+
+4. **M/V Pacific Trader**
+   - **Crew Name:** Ravi Singh
+   - **Rank:** Bosun
+   - **Training Name:** Enclosed Space Entry
+   - **Expiry Date:** May 15, 2026
+   - **Status:** Expiring in 30 days
+
+5. **M/V Ocean Aurora**
+   - **Crew Name:** Maria Santos
+   - **Rank:** Chief Officer
+   - **Training Name:** Advanced Cargo Operations
+   - **Expiry Date:** May 20, 2026
+   - **Status:** Expiring in 30 days
+
+6. **M/T Blue Horizon**
+   - **Crew Name:** Park Hyun
+   - **Rank:** Chief Officer
+   - **Training Name:** Oil Tanker Advanced Training
+   - **Expiry Date:** May 28, 2026
+   - **Status:** Expiring in 30 days
+
+This summary highlights the crew members at risk due to their training status, categorized by vessel.",,
+object_index_retriever,Hard,선박별로 지금 당장 조치해야 할 action item을 하나씩 보여줘.,ok,"WITH action_items AS (
+    SELECT
+        v.vessel_id,
+        v.vessel_name,
+        'expired_certificate' AS action_type,
+        c.certificate_name AS action_detail,
+        c.expiry_date AS due_date,
+        4 AS priority_score
+    FROM certificates c
+    JOIN vessels v ON v.vessel_id = c.vessel_id
+    WHERE c.expiry_date < DATE '2026-05-02'
+
+    UNION ALL
+
+    SELECT
+        v.vessel_id,
+        v.vessel_name,
+        'critical_psc_item' AS action_type,
+        ci.item_text AS action_detail,
+        ci.due_date,
+        CASE ci.severity WHEN 'critical' THEN 4 WHEN 'high' THEN 3 ELSE 2 END AS priority_score
+    FROM checklist_items ci
+    JOIN vessels v ON v.vessel_id = ci.vessel_id
+    WHERE ci.checklist_type = 'PSC'
+      AND ci.status <> 'completed'
+      AND ci.severity IN ('critical', 'high')
+
+    UNION ALL
+
+    SELECT
+        v.vessel_id,
+        v.vessel_name,
+        'crew_training_expiry' AS action_type,
+        ctr.crew_name || ' - ' || ctr.training_name AS action_detail,
+        ctr.expiry_date AS due_date,
+        CASE
+            WHEN ctr.expiry_date < DATE '2026-05-02' THEN 4
+            ELSE 2
+        END AS priority_score
+    FROM crew_training_records ctr
+    JOIN vessels v ON v.vessel_id = ctr.vessel_id
+    WHERE ctr.is_required = TRUE
+      AND ctr.expiry_date <= DATE '2026-05-02' + INTERVAL '30 days'
+),
+ranked AS (
+    SELECT
+        *,
+        ROW_NUMBER() OVER (
+            PARTITION BY vessel_id
+            ORDER BY priority_score DESC, due_date ASC
+        ) AS rn
+    FROM action_items
+)
+SELECT
+    vessel_name,
+    action_type,
+    action_detail,
+    due_date,
+    priority_score
+FROM ranked
+WHERE rn = 1
+ORDER BY priority_score DESC, due_date ASC, vessel_name;","다음은 각 선박별로 지금 당장 조치해야 할 주요 사항입니다:
+
+1. **M/V Hanseatic Star**
+   - **조치 유형:** 승무원 교육 만료
+   - **상세 내용:** Jose Santos - Basic Safety Training
+   - **만료일:** 2025년 12월 31일
+   - **우선 순위 점수:** 4
+
+2. **M/V Pacific Trader**
+   - **조치 유형:** 만료된 인증서
+   - **상세 내용:** Cargo Ship Safety Construction Certificate
+   - **만료일:** 2026년 4월 20일
+   - **우선 순위 점수:** 4
+
+3. **M/V Ocean Aurora**
+   - **조치 유형:** 승무원 교육 만료
+   - **상세 내용:** Lee Jisoo - ECDIS Generic Training
+   - **만료일:** 2026년 4월 30일
+   - **우선 순위 점수:** 4
+
+4. **M/V Coastal Hope**
+   - **조치 유형:** 중요 PSC 항목
+   - **상세 내용:** Muster list updated after crew change
+   - **만료일:** 2026년 5월 3일
+   - **우선 순위 점수:** 3
+
+5. **M/T Blue Horizon**
+   - **조치 유형:** 승무원 교육 만료
+   - **상세 내용:** Park Hyun - Oil Tanker Advanced Training
+   - **만료일:** 2026년 5월 28일
+   - **우선 순위 점수:** 2
+
+각 선박의 조치 사항을 신속히 처리하시기 바랍니다.",,
