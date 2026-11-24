@@ -6,12 +6,11 @@
 
 ## Goal
 
-선박 운항 컴플라이언스 도메인의 PostgreSQL 데이터베이스를 Neon에 구축하고, 수업 자료의 Text-to-SQL 흐름에 맞춰 자연어 질문 10개를 SQL로 변환, 실행, 검증하는 에이전트를 만든다.
+선박 운항 컴플라이언스 도메인의 PostgreSQL 데이터베이스를 Neon에 구축하고, LlamaIndex Text-to-SQL 흐름에 맞춰 자연어 질문 10개를 SQL로 변환, 실행, 검증하는 에이전트를 만든다.
 
 ## Development Steps
 
 1. Finalize `docs/PROJECT_BRIEF.md`
-   - 과제 #1 양식 충족 여부 확인
    - 5개 테이블, 10개 질문, ERD, sample data 유지
    - Mermaid ERD와 영어/한국어 용어를 자연스럽게 정리
 

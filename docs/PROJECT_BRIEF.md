@@ -22,7 +22,7 @@
 
 질문 10개는 단순 예시가 아니라 Text-to-SQL 에이전트의 기준선 평가 세트입니다. Easy/Medium/Hard 질문을 골고루 섞어 두면, 모델이 단순 필터·JOIN·집계·윈도우 함수·다단계 CTE 중 어디에서 실패하는지 확인할 수 있습니다.
 
-초기 데이터는 과제용 가상 데이터입니다. 실제 선박 운항 업무의 Ship Profile 조회, Certificate 만료 알림, PSC/FSC Checklist 관리, STCW Crew Training 이력 흐름을 참고해 실무 질문에 가까운 구조로 설계했습니다.
+초기 데이터는 가상 데이터입니다. 실제 선박 운항 업무의 Ship Profile 조회, Certificate 만료 알림, PSC/FSC Checklist 관리, STCW Crew Training 이력 흐름을 참고해 실무 질문에 가까운 구조로 설계했습니다.
 
 ## 4. 테이블 설계
 

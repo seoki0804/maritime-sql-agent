@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Execute the submission notebook after reading secrets without echoing them."""
+"""Execute the Colab notebook locally after reading secrets without echoing them."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from nbclient import NotebookClient
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-NOTEBOOK_PATH = PROJECT_ROOT / "maritime_SQL_agent_colab_submission.ipynb"
+NOTEBOOK_PATH = PROJECT_ROOT / "maritime_sql_agent.ipynb"
 
 
 def set_secret(name: str, required: bool = True) -> None:

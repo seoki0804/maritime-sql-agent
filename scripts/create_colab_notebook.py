@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create a single self-contained Colab notebook for submission."""
+"""Create a single self-contained Colab notebook."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-OUT = PROJECT_ROOT / "maritime_SQL_agent_colab_submission.ipynb"
+OUT = PROJECT_ROOT / "maritime_sql_agent.ipynb"
 
 
 def md(source: str) -> dict:
@@ -47,7 +47,7 @@ cells = [
 
         ## 선박 운항 컴플라이언스 관리를 위한 Text-to-SQL 분석 에이전트
 
-        이 노트북은 과제 제출용 단일 Colab notebook입니다. 위에서부터 실행하면 다음을 수행합니다.
+        이 노트북은 한 번에 실행할 수 있는 단일 Colab notebook입니다. 위에서부터 실행하면 다음을 수행합니다.
 
         1. Neon PostgreSQL에 `maritime_sql_agent` schema 생성
         2. 5개 테이블과 seed data 생성
@@ -145,7 +145,7 @@ cells = [
             os.environ.setdefault("LANGCHAIN_TRACING_V2", "true")
             os.environ.setdefault("LANGCHAIN_PROJECT", "maritime_SQL_agent")
 
-        # 과제에서 사용할 schema와 5개 테이블 고정함
+        # 이 프로젝트의 schema와 5개 테이블로 고정
         MARITIME_SCHEMA = "maritime_sql_agent"
         MARITIME_TABLES = [
             "vessels",

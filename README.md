@@ -80,7 +80,7 @@ python scripts/run_expected_queries.py
 python scripts/launch_gradio_ui.py # 데모 UI
 ```
 
-Colab에서는 `maritime_sql_agent_submission.ipynb` 를 위에서부터 실행하면 됩니다. 비밀값은 Colab Secrets(`NEON_DSN`, `OPENAI_API_KEY`)에서 읽습니다.
+Colab에서는 `maritime_sql_agent.ipynb` 를 위에서부터 실행하면 됩니다. 비밀값은 Colab Secrets(`NEON_DSN`, `OPENAI_API_KEY`)에서 읽습니다.
 
 ## 기술 스택
 
@@ -89,4 +89,3 @@ PostgreSQL(Neon) · LlamaIndex · OpenAI API · Gradio · Python
 ## 참고
 
 seed data는 실제 운영 데이터가 아니라, 해사 업무 패턴을 참고해 만든 synthetic data입니다.
-aSSIST AI빅데이터 석사과정 RDB & SQL 모듈 프로젝트로 시작했습니다.
